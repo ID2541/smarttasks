@@ -1,3 +1,4 @@
+// src/components/PrivateRoute.jsx
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -6,11 +7,11 @@ const PrivateRoute = ({ children }) => {
     const { user } = useContext(AuthContext);
 
     if (!user) {
-        // Non loggato → redirect al login
+        // Non loggato → redirect a login
         return <Navigate to="/login" replace />;
     }
 
-    // Utente loggato → mostra contenuto
+    // Loggato → renderizza il componente protetto
     return children;
 };
 

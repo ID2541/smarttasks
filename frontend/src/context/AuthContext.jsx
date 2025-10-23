@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import { setAuthToken } from "../api/api";
 
 export const AuthContext = createContext();
 
@@ -12,6 +13,7 @@ export const AuthProvider = ({ children }) => {
         if (savedUser && savedToken) {
             setUser(JSON.parse(savedUser));
             setToken(savedToken);
+            setAuthToken(savedToken);
         }
     }, []);
 
@@ -20,6 +22,7 @@ export const AuthProvider = ({ children }) => {
         setToken(token);
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("token", token);
+        setAuthToken(token);
     };
 
     const logout = () => {
@@ -27,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+        setAuthToken(null);
     };
 
     return (
