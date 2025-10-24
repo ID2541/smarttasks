@@ -1,23 +1,15 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const Dashboard = () => {
-    const { user, logout } = useContext(AuthContext);
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        logout();
-        navigate("/login");
-    };
-
+export default function Dashboard() {
     return (
-        <div>
-            <h2>Welcome, {user.username}!</h2>
-            <button onClick={handleLogout}>Logout</button>
-            <p>This is your protected Dashboard.</p>
+        <div className="p-6">
+            <h1 className="text-xl font-bold mb-4">Dashboard</h1>
+            <Link
+                to="/kanban"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+                Vai alla Kanban Board
+            </Link>
         </div>
     );
-};
-
-export default Dashboard;
+}

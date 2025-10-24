@@ -1,13 +1,22 @@
-import { api, setAuthToken } from "./api";
+// src/api/auth.js
+import axios from "axios";
 
-export const loginUser = async (username, password) => {
-    const res = await api.post("/token/", { username, password });
-    setAuthToken(res.data.access);
-    return res.data;
+const API_URL = "http://127.0.0.1:8000/api";
+
+// Header helper per autenticazione JWT
+export const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-export const registerUser = async (username, password) => {
-    const res = await api.post("/register/", { username, password });
-    setAuthToken(res.data.access);
-    return res.data;
+// Registrazione utente
+export const registerUser = async (userData) => {
+    const response = await axios.post(`${API_URL}/register/`, userData);
+    return response.data;
+};
+
+// Login utente
+export const loginUser = async (credentials) => {
+    const response = await axios.post(`${API_URL}/token/`, credentials);
+    return response.data;
 };
