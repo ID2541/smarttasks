@@ -1,60 +1,59 @@
 // src/api/api.js
 import axios from "axios";
-import { getAuthHeader } from "./auth";
 
 const API_URL = "http://127.0.0.1:8000/api";
 
-// Imposta token di autenticazione globale su axios
-export const setAuthToken = (token) => {
-    if (token) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    } else {
-        delete axios.defaults.headers.common["Authorization"];
-    }
-};
+// ✅ Crea un'istanza di Axios con interceptor per JWT
+export const authAxios = axios.create({
+  baseURL: API_URL,
+});
 
-// Intercettore globale per gestire errori 401
-axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response && error.response.status === 401) {
-            console.warn("Token non valido o scaduto — logout necessario.");
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.location.href = "/login";
-        }
-        return Promise.reject(error);
-    }
-);
+authAxios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access"); // prende il token dal localStorage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-// Progetti
+// ======================
+// 🔹 Progetti
+// ======================
 export const getProjects = async () => {
-    const res = await axios.get(`${API_URL}/projects/`, { headers: getAuthHeader() });
-    return res.data;
+  const response = await authAxios.get("/projects/");
+  return response.data;
 };
 
-// Colonne
+export const createProject = async (projectData) => {
+  const response = await authAxios.post("/projects/", projectData);
+  return response.data;
+};
+
+// ======================
+// 🔹 Colonne
+// ======================
 export const getColumns = async (projectId) => {
-    const res = await axios.get(`${API_URL}/columns/?project=${projectId}`, { headers: getAuthHeader() });
-    return res.data;
+  // ⚠️ Assicuriamoci che projectId sia passato correttamente
+  if (!projectId) throw new Error("ProjectId mancante per getColumns");
+  const response = await authAxios.get(`/columns/?project=${projectId}`);
+  return response.data;
 };
 
-// Task
+// ======================
+// 🔹 Task
+// ======================
 export const getTasks = async (projectId) => {
-    const res = await axios.get(`${API_URL}/tasks/?project=${projectId}`, { headers: getAuthHeader() });
-    return res.data;
+  if (!projectId) throw new Error("ProjectId mancante per getTasks");
+  // Filtra tasks solo per colonne del progetto selezionato
+  const response = await authAxios.get(`/tasks/?project=${projectId}`);
+  return response.data;
 };
 
-export const createTask = async (data) => {
-    const res = await axios.post(`${API_URL}/tasks/`, data, { headers: getAuthHeader() });
-    return res.data;
-};
-
-export const updateTask = async (id, data) => {
-    const res = await axios.put(`${API_URL}/tasks/${id}/`, data, { headers: getAuthHeader() });
-    return res.data;
-};
-
-export const deleteTask = async (id) => {
-    await axios.delete(`${API_URL}/tasks/${id}/`, { headers: getAuthHeader() });
+export const createTask = async (columnId, taskData) => {
+  if (!columnId) throw new Error("ColumnId mancante per createTask");
+  const response = await authAxios.post("/tasks/", {
+    ...taskData,
+    column: columnId, // assegna correttamente la colonna
+  });
+  return response.data;
 };

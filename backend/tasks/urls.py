@@ -5,9 +5,9 @@ from .views import ProjectViewSet, ColumnViewSet, TaskViewSet, RegisterView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
-router.register(r'projects', ProjectViewSet)
-router.register(r'columns', ColumnViewSet)
-router.register(r'tasks', TaskViewSet)
+router.register(r'projects', ProjectViewSet, basename='project')
+router.register(r'columns', ColumnViewSet, basename='column')
+router.register(r'tasks', TaskViewSet, basename='task')
 
 urlpatterns = [
     path('', include(router.urls)),

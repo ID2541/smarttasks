@@ -1,29 +1,28 @@
 // src/pages/Register.jsx
 import { useState, useContext } from "react";
-import { registerUser } from "../api/auth";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const { login } = useContext(AuthContext);
-    const navigate = useNavigate();
+
+    const { registerUser } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
         try {
-            const data = await registerUser({ username, password });
-            login({ username: data.username }, data.access);
-            navigate("/dashboard");
+            await registerUser(username, password);
+            // navigazione gestita dentro registerUser
         } catch (err) {
-            setError(err.response?.data?.error || "Errore nella registrazione");
+            setError("Errore durante la registrazione");
+            console.error(err);
         }
     };
 
     return (
-        <div className="p-4 max-w-sm mx-auto">
+        <div className="p-4 max-w-sm mx-auto mt-10">
             <h2 className="text-xl font-bold mb-4">Registrati</h2>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <form onSubmit={handleSubmit} className="flex flex-col gap-2">
